@@ -22,3 +22,34 @@ jobs:
         with:
           environment-file: environment.yml
           miniforge-version: latest
+  tests:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu", "macos", "windows"]
+        include:
+          - os: ubuntu
+            environment-file: etc/example-environment-no-name.yml
+            miniforge-variant: Mambaforge
+            miniforge-version: 4.9.2-4
+          - os: macos
+            environment-file: etc/example-empty-channels-environment.yml
+            miniforge-variant: Mambaforge-pypy3
+          - os: windows
+            environment-file: etc/example-explicit.Windows.conda.lock
+            condarc-file: etc/example-condarc.yml
+            miniforge-variant: Mambaforge
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          condarc-file: ${{ matrix.condarc-file }}
+          environment-file: ${{ matrix.environment-file }}
+          miniforge-variant: ${{ matrix.miniforge-variant }}
+          miniforge-version: ${{ matrix.miniforge-version }}
+          use-mamba: true
+      - name: tests
+        shell: bash -l {0}
+        run: python -m unittest discover -s tests/ -p "*_test.py"
