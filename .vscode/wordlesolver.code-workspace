@@ -1,0 +1,55 @@
+{
+    "folders": [
+        {
+            "path": "../"
+        }
+    ],
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Python: Run current",
+                "type": "python",
+                "request": "launch",
+                "program": "${file}",
+                "console": "integratedTerminal",
+                "justMyCode": true
+            }
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "command": "cmd.exe",
+        "tasks": [
+            {
+                "label": "Python: Run current",
+                "type": "shell",
+                "command": "${command:python.interpreterPath}",
+                "args": [
+                    "${file}"
+                ],
+                "problemMatcher": []
+            }
+        ]
+    },
+    "settings": {
+        "[python]": {
+            "editor.defaultFormatter": "ms-python.black-formatter",
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": true
+            }
+        },
+        "python.sortImports.args": [
+            "--profile", "black"
+        ],
+        "python.linting.pylintEnabled": true,
+        "python.linting.enabled": true
+    },
+    "extensions": {
+        "recommendations": [
+            "donjayamanne.python-extension-pack",
+            "ms-python.black-formatter"
+        ]
+    }
+}
