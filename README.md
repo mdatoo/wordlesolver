@@ -1,7 +1,7 @@
 # wordlesolver
 ## Installation
 - Ensure conda is installed ([miniforge](https://github.com/conda-forge/miniforge) is recommended)
-- Clone the repo: `shgit clone https://github.com/mdatoo/wordlesolver.git`
+- Clone the repo: `git clone https://github.com/mdatoo/wordlesolver.git`
 - Create conda environment: `conda env create -f environment.yml`
 
 ## Development tools
