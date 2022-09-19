@@ -10,11 +10,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: conda-incubator/setup-miniconda@v2
       with:
-        activate-environment: wordlesolver
         environment-file: environment.yml
         miniforge-variant: Mambaforge
         use-mamba: true
-    - uses: pre-commit/action@v3.0.0
+    - name: Run pre-commit
+      shell: bash -l {0}
+      run: pre-commit run --show-diff-on-failure --color=always
   tests:
     name: Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}-latest
@@ -26,7 +27,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: wordlesolver
           environment-file: environment.yml
           miniforge-variant: Mambaforge
           use-mamba: true
