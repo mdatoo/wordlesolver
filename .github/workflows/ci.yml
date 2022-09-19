@@ -32,4 +32,6 @@ jobs:
           use-mamba: true
       - name: Run tests
         shell: bash -l {0}
-        run: python -m unittest discover -s tests/ -p "*_test.py"
+        run: |
+          pre-commit install --hook-type commit-msg
+          python -m unittest discover -s tests/ -p "*_test.py"
