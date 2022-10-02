@@ -10,5 +10,5 @@
 - Initialise pre-commit: `pre-commit install --hook-type commit-msg`
 
 ## Running
-- Run project: 
+- Run project: `python main.py {generator} {solver}`
 - Run tests: `python -m unittest discover -s tests/ -p "*_test.py"`
