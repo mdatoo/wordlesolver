@@ -31,6 +31,7 @@ class RealGenerator(Generator):
         Dictionary containing mappings from cell states to LetterValidities
     """
 
+    PLAYWRIGHT = sync_playwright().start()
     PAGE_URL = "https://www.nytimes.com/games/wordle/index.html"
     PAGE_WIDTH = 1920
     PAGE_HEIGHT = 1080
@@ -48,11 +49,8 @@ class RealGenerator(Generator):
 
     @classmethod
     def _new_tab(cls) -> Page:
-        return (
-            sync_playwright()
-            .start()
-            .chromium.launch()
-            .new_page(viewport={"width": cls.PAGE_WIDTH, "height": cls.PAGE_HEIGHT})
+        return cls.PLAYWRIGHT.chromium.launch().new_page(
+            viewport={"width": cls.PAGE_WIDTH, "height": cls.PAGE_HEIGHT}
         )
 
     def _open_page(self) -> None:

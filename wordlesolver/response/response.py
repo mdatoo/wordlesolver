@@ -1,5 +1,8 @@
 """
 File conntaining dataclass holding a response to a guess
+
+Classes:
+    Response
 """
 
 from dataclasses import dataclass
