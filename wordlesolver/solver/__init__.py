@@ -10,9 +10,10 @@ Misc variables:
 
 from argparse import Action, ArgumentParser, Namespace
 
+from .maximise_matches_solver import MaximiseMatchesSolver
 from .solver import Solver
 
-solvers = {}
+solvers = {"MaximiseMatchesSolver": MaximiseMatchesSolver}
 
 
 class ValidateSolver(Action):

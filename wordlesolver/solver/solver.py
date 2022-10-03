@@ -7,22 +7,18 @@ Classes:
 
 from abc import ABC, abstractmethod
 from logging import info
-from typing import Dict, List
+from typing import Optional
 
 from ..generator import Generator
-from ..response import GameStatus, LetterValidity
+from ..response import GameStatus, Response
 
 
+# pylint: disable=too-few-public-methods; abstract class
 class Solver(ABC):
     """
     Solver abstract class
 
     ...
-
-    Attributes
-    ----------
-    responses : Dict[str, List[LetterValidity]]
-        Dictionary of guess and word validity pairs
 
     Methods
     -------
@@ -32,32 +28,25 @@ class Solver(ABC):
 
     def __init__(self, generator: Generator) -> None:
         self._generator = generator
-        self._word_validities = {}
-
-    @property
-    def responses(self) -> Dict[str, List[LetterValidity]]:
-        """
-        Dictionary of guess and word validity pairs
-        """
-
-        return self._responses
 
     def run(self) -> None:
         """
         Run the game
         """
 
+        response = None
+
         while True:
-            next_guess = self.next_guess()
+            next_guess = self._next_guess(response)
             response = self._generator.guess(next_guess)
-            self._responses[next_guess] = response.word_validity
 
             info(f"Guessed {next_guess}, got {response.word_validity}")
 
             if response.game_status != GameStatus.RUNNING:
-                info(f"Finished game with result {response.game_status}")
                 break
 
+        info(f"Finished game with result {response.game_status}")
+
     @abstractmethod
-    def _next_guess(self) -> str:
+    def _next_guess(self, previous_response: Optional[Response]) -> str:
         raise NotImplementedError

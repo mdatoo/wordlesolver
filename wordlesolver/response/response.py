@@ -23,9 +23,12 @@ class Response:
     ----------
     game_status : GameStatus
         Current game status
+    guess : str
+        Word that was guessed
     word_validity : List[LetterValidity]
         Letter validity for each letter in the guess
     """
 
     game_status: GameStatus
+    guess: str
     word_validity: List[LetterValidity]

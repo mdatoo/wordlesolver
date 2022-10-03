@@ -6,6 +6,7 @@ Functions:
 """
 
 from argparse import ArgumentParser, Namespace
+from logging import INFO, basicConfig
 
 from wordlesolver.generator import ValidateGenerator
 from wordlesolver.solver import ValidateSolver
@@ -35,6 +36,7 @@ def parse_arguments() -> Namespace:
 
 
 if __name__ == "__main__":
+    basicConfig(level=INFO)
     args = parse_arguments()
 
     generator = args.generator()

@@ -5,10 +5,12 @@ Classes:
     FakeGenerator(Generator)
 """
 
+from collections import Counter
 from functools import cached_property
 from random import choice
 from typing import List
 
+from ..data import POSSIBLE_WORDS
 from ..response import LetterValidity
 from .generator import Generator
 
@@ -16,24 +18,29 @@ from .generator import Generator
 class FakeGenerator(Generator):
     """
     Fake word generator class
-
-    ...
-
-    Attributes
-    ----------
-    POSSIBLE_WORDS : List[str]
-        List of possible words to choose from
     """
-
-    with open("data/words.txt", "r", encoding="utf-8") as file:
-        POSSIBLE_WORDS = file.readlines()
 
     @cached_property
     def _word(self) -> str:
-        return choice(self.POSSIBLE_WORDS)
+        return choice(POSSIBLE_WORDS)
 
     def _word_validity(self, guess: str) -> List[LetterValidity]:
-        return [self._letter_validity(pos, letter) for pos, letter in enumerate(guess)]
+        word_validity = [
+            self._letter_validity(pos, letter) for pos, letter in enumerate(guess)
+        ]
+
+        character_frequencies = Counter(self._word)
+        for character, validity in zip(guess, word_validity):
+            if validity == LetterValidity.GREEN:
+                character_frequencies[character] -= 1
+        for pos, (character, validity) in enumerate(zip(guess, word_validity)):
+            if validity == LetterValidity.YELLOW:
+                if character_frequencies[character] <= 0:
+                    word_validity[pos] = LetterValidity.GREY
+                else:
+                    character_frequencies[character] -= 1
+
+        return word_validity
 
     def _letter_validity(self, pos: int, letter: str) -> LetterValidity:
         assert len(letter) == 1, "Expected char, got string"

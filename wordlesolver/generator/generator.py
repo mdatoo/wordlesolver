@@ -8,6 +8,7 @@ Classes:
 from abc import ABC, abstractmethod
 from typing import List
 
+from ..data import WORD_LENGTH
 from ..response import GameStatus, LetterValidity, Response
 
 
@@ -35,7 +36,6 @@ class Generator(ABC):
     """
 
     GUESSES = 6
-    WORD_LENGTH = 5
 
     def __init__(self) -> None:
         self._game_status = GameStatus.RUNNING
@@ -68,7 +68,7 @@ class Generator(ABC):
             Response: Result of guess
         """
 
-        assert len(guess) == self.WORD_LENGTH, f"Guess {guess} of incorrect length"
+        assert len(guess) == WORD_LENGTH, f"Guess {guess} of incorrect length"
         assert self.game_status == GameStatus.RUNNING, "Cannot guess when game ended"
 
         word_validity = self._word_validity(guess)
@@ -79,7 +79,7 @@ class Generator(ABC):
         elif self.guesses_taken >= 6:
             self._game_status = GameStatus.LOST
 
-        return Response(self.game_status, word_validity)
+        return Response(self.game_status, guess, word_validity)
 
     @abstractmethod
     def _word_validity(self, guess: str) -> List[LetterValidity]:

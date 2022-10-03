@@ -19,3 +19,4 @@ repos:
       - id: pylint
         additional_dependencies:
         - pytest-playwright==0.3.0
+        - tqdm==4.64.1

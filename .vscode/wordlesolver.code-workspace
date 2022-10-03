@@ -8,12 +8,30 @@
         "version": "0.2.0",
         "configurations": [
             {
-                "name": "Python: Run current",
+                "name": "Python: Run main",
                 "type": "python",
                 "request": "launch",
-                "program": "${file}",
+                "program": "main.py",
                 "console": "integratedTerminal",
-                "justMyCode": true
+                "justMyCode": true,
+                "args": [
+                    "${input:generator}",
+                    "${input:solver}"
+                ]
+            }
+        ],
+        "inputs": [
+            {
+                "id": "generator",
+                "type": "promptString",
+                "description": "Word generator to use",
+                "default": "FakeGenerator"
+            },
+            {
+                "id": "solver",
+                "type": "promptString",
+                "description": "Wordle solver to use",
+                "default": "MaximiseMatchesSolver"
             }
         ]
     },
@@ -22,13 +40,29 @@
         "command": "cmd.exe",
         "tasks": [
             {
-                "label": "Python: Run current",
+                "label": "Python: Run main",
                 "type": "shell",
                 "command": "${command:python.interpreterPath}",
+                "problemMatcher": [],
                 "args": [
-                    "${file}"
+                    "main.py",
+                    "${input:generator}",
+                    "${input:solver}"
                 ],
-                "problemMatcher": []
+            }
+        ],
+        "inputs": [
+            {
+                "id": "generator",
+                "type": "promptString",
+                "description": "Word generator to use",
+                "default": "FakeGenerator"
+            },
+            {
+                "id": "solver",
+                "type": "promptString",
+                "description": "Wordle solver to use",
+                "default": "MaximiseMatchesSolver"
             }
         ]
     },
