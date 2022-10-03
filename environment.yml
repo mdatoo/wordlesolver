@@ -2,7 +2,7 @@ name: wordlesolver
 channels:
   - conda-forge
 dependencies:
-  - black=22.8.0
+  - black=22.6.0
   - isort=5.10.1
   - pip=22.2.2
   - pre-commit=2.20.0
