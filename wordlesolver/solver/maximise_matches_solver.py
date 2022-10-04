@@ -60,10 +60,10 @@ class MaximiseMatchesSolver(Solver):
         return max(tqdm(self.possible_words), key=self._matching_words_count)
 
     def _matching_words_count(self, guess: str) -> int:
-        match_rating = 0
+        matching_chars = set()
 
         for word in self.possible_words:
             for char_0, char_1 in zip(guess, word):
                 if char_0 == char_1:
-                    match_rating += 1
-        return match_rating
+                    matching_chars.add(char_0)
+        return len(matching_chars)
