@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from ..generator import Generator
 from ..response import Response
-from .character_counting_filter import CharacterCountingFilter
+from .filter import Filter
 from .solver import Solver
 
 
@@ -32,7 +32,7 @@ class MaximiseMatchesSolver(Solver):
     def __init__(self, generator: Generator) -> None:
         super().__init__(generator)
 
-        self._filter = CharacterCountingFilter()
+        self._filter = Filter()
 
     @property
     def possible_words(self) -> List[str]:
@@ -57,9 +57,9 @@ class MaximiseMatchesSolver(Solver):
                 previous_response.word_validity,
             )
 
-        return max(tqdm(self.possible_words), key=self._matching_words_count)
+        return max(tqdm(self.possible_words), key=self._count_matches)
 
-    def _matching_words_count(self, guess: str) -> int:
+    def _count_matches(self, guess: str) -> int:
         matching_chars = set()
 
         for word in self.possible_words:
