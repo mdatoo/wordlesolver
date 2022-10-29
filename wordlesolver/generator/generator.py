@@ -76,7 +76,7 @@ class Generator(ABC):
 
         if self._all_green(word_validity):
             self._game_status = GameStatus.WON
-        elif self.guesses_taken >= 6:
+        elif self.guesses_taken >= self.GUESSES:
             self._game_status = GameStatus.LOST
 
         return Response(self.game_status, guess, word_validity)
