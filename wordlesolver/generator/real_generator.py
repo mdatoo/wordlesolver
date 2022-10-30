@@ -55,7 +55,7 @@ class RealGenerator(Generator):
 
     def _open_page(self) -> None:
         self._tab.goto(self.PAGE_URL)
-        if button := self._tab.locator("#pz-gdpr-btn-reject"):
+        if (button := self._tab.locator("#pz-gdpr-btn-reject")).is_visible():
             button.click()
         self._tab.locator('[data-testid="icon-close"]').click()
         expect(self._tab.locator('[data-testid="modal-overlay"]')).to_be_hidden()
