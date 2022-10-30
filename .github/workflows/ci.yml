@@ -34,4 +34,6 @@ jobs:
           use-mamba: true
       - name: Run tests
         shell: bash -l {0}
-        run: pytest tests/
+        run: /
+          playwright install
+          pytest tests/
