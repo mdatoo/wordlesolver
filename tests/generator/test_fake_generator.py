@@ -66,12 +66,12 @@ def test_invalid_guess() -> None:
 
     # Given
     fake_generator = FakeGenerator()
-    guessed_word = "too_long_a_word"
+    guessed_word = "abcde"
 
     # Then
     with raises(AssertionError) as exc_info:
         fake_generator.guess(guessed_word)
-    assert str(exc_info.value) == f"Guess {guessed_word} of incorrect length"
+    assert str(exc_info.value) == f"Guess {guessed_word} not in accepted words"
 
 
 if __name__ == "__main__":

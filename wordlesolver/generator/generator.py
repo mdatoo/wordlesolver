@@ -8,7 +8,7 @@ Classes:
 from abc import ABC, abstractmethod
 from typing import List
 
-from ..data import WORD_LENGTH
+from ..data.words import POSSIBLE_WORDS
 from ..response import GameStatus, LetterValidity, Response
 
 
@@ -68,7 +68,7 @@ class Generator(ABC):
             Response: Result of guess
         """
 
-        assert len(guess) == WORD_LENGTH, f"Guess {guess} of incorrect length"
+        assert guess in POSSIBLE_WORDS, f"Guess {guess} not in accepted words"
         assert self.game_status == GameStatus.RUNNING, "Cannot guess when game ended"
 
         word_validity = self._word_validity(guess)

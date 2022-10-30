@@ -57,6 +57,7 @@ class RealGenerator(Generator):
         self._tab.goto(self.PAGE_URL)
         self._tab.locator("#pz-gdpr-btn-reject").click()
         self._tab.locator('[data-testid="icon-close"]').click()
+        expect(self._tab.locator('[data-testid="modal-overlay"]')).to_be_hidden()
 
     def _word_validity(self, guess: str) -> List[LetterValidity]:
         self._enter(guess)
