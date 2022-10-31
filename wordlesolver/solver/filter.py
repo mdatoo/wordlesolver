@@ -66,24 +66,17 @@ class Filter:
         match validity:
             case LetterValidity.GREEN:
                 self._filter_by_green_match(pos, character)
-            case LetterValidity.YELLOW:
-                self._filter_by_yellow_match(pos, character)
+            case _:
+                self._filter_by_non_green_match(pos, character)
 
     def _filter_by_green_match(self, pos: int, character: str) -> None:
         self._possible_words = [
             word for word in self._possible_words if word[pos] == character
         ]
 
-    def _filter_by_yellow_match(self, pos: int, character: str) -> None:
+    def _filter_by_non_green_match(self, pos: int, character: str) -> None:
         self._possible_words = [
-            word
-            for word in self._possible_words
-            if word[pos] != character and character in word
-        ]
-
-    def _filter_by_no_match(self, character: str) -> None:
-        self._possible_words = [
-            word for word in self._possible_words if character not in word
+            word for word in self._possible_words if word[pos] != character
         ]
 
     def _filter_by_counts(
@@ -95,17 +88,12 @@ class Filter:
             character_idxs[character][letter_validity] += 1
 
         for character, validities in character_idxs.items():
-            if LetterValidity.GREEN and LetterValidity.YELLOW in validities:
-                self._filter_by_at_least_count(
-                    validities[LetterValidity.GREEN] + 1, character
-                )
-            elif LetterValidity.GREEN and LetterValidity.GREY in validities:
-                self._filter_by_exact_count(validities[LetterValidity.GREEN], character)
-            elif (
-                LetterValidity.GREY in validities
-                and LetterValidity.YELLOW not in validities
-            ):
-                self._filter_by_no_count(character)
+            count = validities[LetterValidity.GREEN] + validities[LetterValidity.YELLOW]
+
+            if LetterValidity.GREY in validities:
+                self._filter_by_exact_count(count, character)
+            else:
+                self._filter_by_at_least_count(count, character)
 
     def _filter_by_at_least_count(self, count: int, character: str) -> None:
         self._possible_words = [
@@ -116,6 +104,3 @@ class Filter:
         self._possible_words = [
             word for word in self._possible_words if word.count(character) == count
         ]
-
-    def _filter_by_no_count(self, character: str) -> None:
-        self._filter_by_exact_count(0, character)
