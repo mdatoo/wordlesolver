@@ -1,23 +1,34 @@
 """
-File containing list of answers
+File containing helper function for fetching a particular day's answer.
 
 Functions:
-    get_day_offset() -> int
-
-Misc variables:
-    ANSWERS : List[str]
+    get_answer(date: datetime) -> str
 """
 
 from datetime import datetime
+from json import loads
+
+from requests import get
 
 
-def get_day_offset(date: datetime) -> int:
+def get_answer(date: datetime) -> str:
     """
-    Converts date to offset
+    Fetch a particular day's answer.
+
+    Parameters
+    ----------
+    date : datetime
+        Day to get answer for
+
+    Returns
+    -------
+    str
     """
-
-    return (date - datetime(2021, 6, 19)).days
-
-
-with open("wordlesolver/data/answers.txt", "r", encoding="utf-8") as file:
-    ANSWERS = file.read().replace('"', "").split(", ")
+    return str(
+        loads(
+            get(
+                f"https://www.nytimes.com/svc/wordle/v2/{date.year}-{date.month}-{date.day}.json",
+                timeout=10,
+            ).content
+        )["solution"]
+    )
