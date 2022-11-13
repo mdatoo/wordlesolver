@@ -1,5 +1,5 @@
 """
-File containing real word generator class
+File containing real word generator class.
 
 Classes:
     RealGenerator(Generator)
@@ -15,12 +15,20 @@ from .generator import Generator
 
 class RealGenerator(Generator):
     """
-    Real word generator class
+    Real word generator class.
 
     ...
 
     Attributes
     ----------
+    GUESSES : int
+        Number of guesses allowed
+    ACTION_SPACE : spaces.Discrete
+        Actions allowed
+    OBSERVATION_SPACE : spaces.Discrete
+        Possible observations
+    PLAYWRIGHT : Playwright
+        Playwright instance
     PAGE_URL : str
         Url to wordle site
     PAGE_WIDTH : int
@@ -29,6 +37,22 @@ class RealGenerator(Generator):
         Height to render page at
     DATA_STATE_TO_VALIDITY : Dict[str, LetterValidity]
         Dictionary containing mappings from cell states to LetterValidities
+
+    Properties
+    ----------
+    done : bool
+        Whether the game has ended
+    guesses_remaining : int
+        Remaining guesses
+
+    Methods
+    -------
+    reset(self) -> None
+        Reset the environment
+    step(self, action: int) -> Tuple[List[int], float, bool, dict]
+        Perform given action
+    observe(self) -> List[int]
+        Observe current state
     """
 
     PLAYWRIGHT = sync_playwright().start()
@@ -42,10 +66,24 @@ class RealGenerator(Generator):
     }
 
     def __init__(self) -> None:
+        """Initialise object."""
         super().__init__()
 
         self._tab = self._new_tab()
         self._open_page()
+
+    def reset(self) -> List[int]:
+        """
+        Reset the environment.
+
+        Returns
+        -------
+        List[int]
+        """
+        self._tab = self._new_tab()
+        self._open_page()
+
+        return super().reset()
 
     @classmethod
     def _new_tab(cls) -> Page:
@@ -60,7 +98,7 @@ class RealGenerator(Generator):
         self._tab.locator('[data-testid="icon-close"]').click()
         expect(self._tab.locator('[data-testid="modal-overlay"]')).to_be_hidden()
 
-    def _word_validity(self, guess: str) -> List[LetterValidity]:
+    def _guess_word(self, guess: str) -> List[LetterValidity]:
         self._enter(guess)
         self._wait_for_cell(4)
 
@@ -75,11 +113,23 @@ class RealGenerator(Generator):
         expect(self._cell(idx)).not_to_have_attribute("data-state", "tbd")
 
     def _letter_validity(self, pos: int) -> LetterValidity:
-        return self.DATA_STATE_TO_VALIDITY[self._cell(pos).get_attribute("data-state")]
+        return self.DATA_STATE_TO_VALIDITY[
+            str(self._cell(pos).get_attribute("data-state"))
+        ]
 
     def _cell(self, idx: int) -> Locator:
         return (
-            self._tab.locator(f'[aria-label="Row {self.guesses_taken+1}"]')
+            self._tab.locator(f'[aria-label="Row {self._current_row}"]')
             .locator(".Tile-module_tile__3ayIZ")
             .nth(idx)
+        )
+
+    @property
+    def _current_row(self) -> int:
+        return self.GUESSES - self._guesses_remaining + 1
+
+    def render(self, _: str = "human") -> None:
+        """[NOT IMPLEMENTED] Render current state."""
+        raise NotImplementedError(
+            "Rendering has not been implemented for this environment"
         )

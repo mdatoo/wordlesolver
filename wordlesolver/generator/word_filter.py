@@ -1,56 +1,54 @@
 """
-File containing filter class
+File containing word filter class.
 
 Classes:
-    Filter
+    WordFilter
 """
 
 from collections import defaultdict
-from typing import List
+from typing import Dict, List
 
 from ..data import POSSIBLE_WORDS
 from ..response import LetterValidity
 
 
-class Filter:
+class WordFilter:
     """
-    Filter class
+    WordFilter class.
 
     ...
 
-    Attributes
-    --------------
+    Properties
+    ----------
     possible_words : List[str]
         Possible words left in search space
 
     Methods
     -------
-    filter_possible_words(guess : str, word_validity : List[LetterValidity])
-        Filters possible_words list given a guess and resulting validity
+    filter(self, guess : str, word_validity : List[LetterValidity]) -> None
+        Filter possible words list given a guess and corresponding validity
     """
 
     def __init__(self) -> None:
+        """Initialise object."""
         self._possible_words = POSSIBLE_WORDS
 
     @property
     def possible_words(self) -> List[str]:
-        """
-        Possible words left in search space
-        """
-
+        """Possible words left in search space."""
         return self._possible_words
 
-    def filter_possible_words(
-        self, guess: str, word_validity: List[LetterValidity]
-    ) -> None:
+    def filter(self, guess: str, word_validity: List[LetterValidity]) -> None:
         """
-        Filters possible_words list given a guess and resulting validity
+        Filter possible words list given a guess and corresponding validity.
 
-        Args:
-            guess (str): Guessed word
-            word_validity (List[LetterValidity]): Resulting validity
+        Parameters
+        ----------
+        guess : str
+            Guessed word
+        word_validity : List[LetterValidity]
+            Corresponding validity
         """
-
         self._filter_by_matches(guess, word_validity)
         self._filter_by_counts(guess, word_validity)
 
@@ -82,7 +80,9 @@ class Filter:
     def _filter_by_counts(
         self, guess: str, word_validity: List[LetterValidity]
     ) -> None:
-        character_idxs = defaultdict(lambda: defaultdict(int))
+        character_idxs: Dict[str, Dict[LetterValidity, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         for character, letter_validity in zip(guess, word_validity):
             character_idxs[character][letter_validity] += 1

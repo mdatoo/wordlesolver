@@ -1,68 +1,56 @@
 """
-File containing maximise matches solver class
+File containing maximise matches solver class.
 
 Classes:
     MaximiseMatchesSolver(Solver)
 """
 
-from typing import Dict, List, Optional
+from logging import info
+from typing import List
 
 from tqdm import tqdm
 
-from ..generator import Generator
-from ..response import Response
-from .filter import Filter
+from ..data import POSSIBLE_WORDS
 from .solver import Solver
 
 
+# pylint: disable=too-few-public-methods; runnable solver
 class MaximiseMatchesSolver(Solver):
-    """
-    Maximise matches solver class
+    """Maximise matches solver class."""
 
-    ...
+    def run(self) -> None:
+        """Run solver."""
+        self._generator.reset()
 
-    Attributes
-    ----------
-    possible_words : List[str]
-        Possible words left in search space
-    character_to_possible_words : Dict[str, List[str]]
-        Mapping from character to words in possible_words containing that character
-    """
+        done = False
+        possible_words = POSSIBLE_WORDS
 
-    def __init__(self, generator: Generator) -> None:
-        super().__init__(generator)
+        while not done:
+            next_guess = self._next_guess(possible_words)
+            _, reward, done, extra_data = self._generator.step(
+                POSSIBLE_WORDS.index(next_guess)
+            )
+            possible_words = extra_data["possible_words"]
+            word_validity = extra_data["word_validity"]
 
-        self._filter = Filter()
-
-    @property
-    def possible_words(self) -> List[str]:
-        """
-        Possible words left in search space
-        """
-
-        return self._filter.possible_words
-
-    @property
-    def character_to_possible_words(self) -> Dict[str, List[str]]:
-        """
-        Mapping from character to words in possible_words containing that character
-        """
-
-        return self._filter.character_to_possible_words
-
-    def _next_guess(self, previous_response: Optional[Response]) -> str:
-        if previous_response:
-            self._filter.filter_possible_words(
-                previous_response.guess,
-                previous_response.word_validity,
+            info(
+                f"Guessed {next_guess}, got reward {reward}, got word validity {word_validity}"
             )
 
-        return max(tqdm(self.possible_words), key=self._count_matches)
+        info("Finished game")
 
-    def _count_matches(self, guess: str) -> int:
+    def _next_guess(self, possible_words: List[str]) -> str:
+        return str(
+            max(
+                tqdm(possible_words),
+                key=lambda guess: self._count_matches(guess, possible_words),
+            )
+        )
+
+    def _count_matches(self, guess: str, possible_words: List[str]) -> int:
         matching_chars = set()
 
-        for word in self.possible_words:
+        for word in possible_words:
             for char_0, char_1 in zip(guess, word):
                 if char_0 == char_1:
                     matching_chars.add(char_0)

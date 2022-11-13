@@ -1,5 +1,5 @@
 """
-File containing tests for filter class
+File containing tests for word filter class.
 
 Functions:
     test_filter_one_green() -> None
@@ -11,17 +11,14 @@ Functions:
 from pytest import main
 
 from wordlesolver.data import POSSIBLE_WORDS
+from wordlesolver.generator.word_filter import WordFilter
 from wordlesolver.response import LetterValidity
-from wordlesolver.solver.filter import Filter
 
 
 def test_filter_one_green() -> None:
-    """
-    Test case where one letter matches in correct position
-    """
-
+    """Test case where one letter matches in correct position."""
     # Given
-    filterer = Filter()
+    filterer = WordFilter()
     word = "eeeee"
     validity = [
         LetterValidity.GREEN,
@@ -32,7 +29,7 @@ def test_filter_one_green() -> None:
     ]
 
     # When
-    filterer.filter_possible_words(word, validity)
+    filterer.filter(word, validity)
 
     # Then
     for possible_word in POSSIBLE_WORDS:
@@ -43,12 +40,9 @@ def test_filter_one_green() -> None:
 
 
 def test_filter_two_yellow() -> None:
-    """
-    Test case where 2 letters match in wrong position
-    """
-
+    """Test case where 2 letters match in wrong position."""
     # Given
-    filterer = Filter()
+    filterer = WordFilter()
     word = "eezzz"
     validity = [
         LetterValidity.YELLOW,
@@ -59,7 +53,7 @@ def test_filter_two_yellow() -> None:
     ]
 
     # When
-    filterer.filter_possible_words(word, validity)
+    filterer.filter(word, validity)
 
     # Then
     for possible_word in POSSIBLE_WORDS:
@@ -80,12 +74,9 @@ def test_filter_two_yellow() -> None:
 
 
 def test_filter_one_green_one_yellow() -> None:
-    """
-    Test case where 2 letters match, one in correct position
-    """
-
+    """Test case where 2 letters match, one in correct position."""
     # Given
-    filterer = Filter()
+    filterer = WordFilter()
     word = "eeezz"
     validity = [
         LetterValidity.GREEN,
@@ -96,7 +87,7 @@ def test_filter_one_green_one_yellow() -> None:
     ]
 
     # When
-    filterer.filter_possible_words(word, validity)
+    filterer.filter(word, validity)
 
     # Then
     for possible_word in POSSIBLE_WORDS:
@@ -119,12 +110,9 @@ def test_filter_one_green_one_yellow() -> None:
 
 
 def test_filter_all_grey() -> None:
-    """
-    Test case where no letters match
-    """
-
+    """Test case where no letters match."""
     # Given
-    filterer = Filter()
+    filterer = WordFilter()
     word = "eeeee"
     validity = [
         LetterValidity.GREY,
@@ -135,7 +123,7 @@ def test_filter_all_grey() -> None:
     ]
 
     # When
-    filterer.filter_possible_words(word, validity)
+    filterer.filter(word, validity)
 
     # Then
     for possible_word in POSSIBLE_WORDS:

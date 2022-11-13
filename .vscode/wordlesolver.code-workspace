@@ -74,11 +74,27 @@
                 "source.organizeImports": true
             }
         },
-        "python.sortImports.args": [
-            "--profile", "black"
+        "isort.args": [
+            "--profile",
+            "black",
+            "--known-local-folder",
+            "wordlesolver",
+            "--known-local-folder",
+            "tests"
         ],
-        "python.linting.pylintEnabled": true,
         "python.linting.enabled": true,
+        "python.linting.banditEnabled": true,
+        "python.linting.banditArgs": ["--configfile", "bandit.yaml"],
+        "python.linting.mypyEnabled": true,
+        "python.linting.mypyArgs": [
+            "--follow-imports=silent",
+            "--ignore-missing-imports",
+            "--show-column-numbers",
+            "--no-pretty",
+            "--strict"
+        ],
+        "python.linting.pydocstyleEnabled": true,
+        "python.linting.pylintEnabled": true,
         "python.testing.pytestArgs": [
             "tests"
         ],

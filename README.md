@@ -11,4 +11,4 @@
 
 ## Running
 - Run project: `python main.py {generator} {solver}`
-- Run tests: `python -m unittest discover -s tests/ -p "*_test.py"`
+- Run tests: `pytest tests/`

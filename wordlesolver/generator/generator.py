@@ -1,20 +1,23 @@
 """
-File containing word generator abstract class
+File containing word generator abstract class.
 
 Classes:
-    Generator(ABC)
+    Generator(Env)
 """
 
-from abc import ABC, abstractmethod
-from typing import List
+from abc import abstractmethod
+from typing import Any, Dict, List, Tuple
 
-from ..data.words import POSSIBLE_WORDS
-from ..response import GameStatus, LetterValidity, Response
+from gym import Env, spaces
+
+from ..data import DICTIONARY_LENGTH, POSSIBLE_WORDS
+from ..response import LetterValidity
+from .word_filter import WordFilter
 
 
-class Generator(ABC):
+class Generator(Env):  # type: ignore[misc] # gym has bad type stubs
     """
-    Generator abstract class
+    Generator abstract class.
 
     ...
 
@@ -22,70 +25,126 @@ class Generator(ABC):
     ----------
     GUESSES : int
         Number of guesses allowed
-    WORD_LENGTH : int
-        Length of words allowed
-    game_status : GameStatus
-        Current game status
-    guesses_taken : int
-        Number of guesses taken
+    ACTION_SPACE : spaces.Discrete
+        Actions allowed
+    OBSERVATION_SPACE : spaces.Discrete
+        Possible observations
+
+    Properties
+    ----------
+    done : bool
+        Whether the game has ended
+    guesses_remaining : int
+        Remaining guesses
 
     Methods
     -------
-    guess(guess: str) -> Response
-        Guess a word, receive a response
+    reset(self) -> None
+        Reset the environment
+    step(self, action: int) -> Tuple[List[int], float, bool, dict]
+        Perform given action
+    observe(self) -> List[int]
+        Observe current state
     """
 
     GUESSES = 6
 
+    ACTION_SPACE = spaces.Discrete(DICTIONARY_LENGTH)
+    OBSERVATION_SPACE = spaces.MultiBinary(DICTIONARY_LENGTH)
+
     def __init__(self) -> None:
-        self._game_status = GameStatus.RUNNING
-        self._guesses_taken = 0
+        """Initialise object."""
+        self._done = False
+        self._guesses_remaining = self.GUESSES
+        self._word_filter = WordFilter()
 
     @property
-    def game_status(self) -> GameStatus:
-        """
-        Current game status
-        """
-
-        return self._game_status
+    def done(self) -> bool:
+        """Whether the game has ended."""
+        return self._done
 
     @property
-    def guesses_taken(self) -> int:
+    def guesses_remaining(self) -> int:
+        """Remaining guesses."""
+        return self._guesses_remaining
+
+    def reset(self) -> List[int]:
         """
-        Number of guesses taken
+        Reset the environment.
+
+        Returns
+        -------
+        List[int]
         """
+        self._done = False
+        self._guesses_remaining = self.GUESSES
+        self._word_filter = WordFilter()
 
-        return self._guesses_taken
+        return self.observe()
 
-    def guess(self, guess: str) -> Response:
+    def step(self, action: int) -> Tuple[List[int], float, bool, Dict[str, Any]]:
         """
-        Guess a word, receive a response
+        Perform given action.
 
-        Args:
-            guess (str): Word to guess
+        Parameters
+        ----------
+        action : int
+            Action to perform
 
-        Returns:
-            Response: Result of guess
+        Returns
+        -------
+        Tuple[List[int], float, bool, dict]
         """
+        if not self.ACTION_SPACE.contains(action):
+            raise AssertionError(
+                f"Invalid action {action} specified, must be in range [0..{DICTIONARY_LENGTH}]"
+            )
+        if self.done:
+            raise AssertionError("Cannot perform an action when game ended")
 
-        assert guess in POSSIBLE_WORDS, f"Guess {guess} not in accepted words"
-        assert self.game_status == GameStatus.RUNNING, "Cannot guess when game ended"
+        guess = POSSIBLE_WORDS[action]
+        word_validity = self._guess_word(guess)
 
-        word_validity = self._word_validity(guess)
-        self._guesses_taken += 1
+        self._guesses_remaining -= 1
+        if self.guesses_remaining <= 0 or self._all_green(word_validity):
+            self._done = True
+        self._word_filter.filter(guess, word_validity)
 
-        if self._all_green(word_validity):
-            self._game_status = GameStatus.WON
-        elif self.guesses_taken >= self.GUESSES:
-            self._game_status = GameStatus.LOST
-
-        return Response(self.game_status, guess, word_validity)
+        return (
+            self.observe(),
+            self._get_reward(word_validity),
+            self.done,
+            {
+                "possible_words": self._word_filter.possible_words,
+                "word_validity": word_validity,
+            },
+        )
 
     @abstractmethod
-    def _word_validity(self, guess: str) -> List[LetterValidity]:
+    def _guess_word(self, guess: str) -> List[LetterValidity]:
         raise NotImplementedError
 
     def _all_green(self, word_validity: List[LetterValidity]) -> bool:
         return all(
             letter_validity == LetterValidity.GREEN for letter_validity in word_validity
         )
+
+    def observe(self) -> List[int]:
+        """
+        Observe current state.
+
+        Returns
+        -------
+        List[int]
+        """
+        return [
+            1 if word in self._word_filter.possible_words else 0
+            for word in POSSIBLE_WORDS
+        ]
+
+    def _get_reward(self, word_validity: List[LetterValidity]) -> float:
+        green_reward = word_validity.count(LetterValidity.GREEN)
+        yellow_reward = word_validity.count(LetterValidity.YELLOW) * 0.1
+        unused_turns_reward = self.guesses_remaining * 5 if self.done else 0
+
+        return green_reward + yellow_reward + unused_turns_reward
