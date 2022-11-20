@@ -11,10 +11,14 @@ Misc variables:
 from argparse import Action, ArgumentParser, Namespace
 from typing import Any, Optional, Sequence, Union
 
+from .dqn_solver import DqnSolver
 from .maximise_matches_solver import MaximiseMatchesSolver
 from .solver import Solver
 
-solvers = {"maximise_matches_solver.py": MaximiseMatchesSolver}
+solvers = {
+    "dqn_solver.py": DqnSolver,
+    "maximise_matches_solver.py": MaximiseMatchesSolver,
+}
 
 
 class ValidateSolver(Action):
@@ -36,4 +40,4 @@ class ValidateSolver(Action):
         setattr(namespace, self.dest, solvers[value])
 
 
-__all__ = ["Solver", "MaximiseMatchesSolver", "ValidateSolver"]
+__all__ = ["Solver", "DqnSolver", "MaximiseMatchesSolver", "ValidateSolver"]

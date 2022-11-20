@@ -11,7 +11,7 @@ Misc variables:
 from argparse import Action, ArgumentParser, Namespace
 from typing import Any, Optional, Sequence, Union
 
-from gym.envs import register
+from gym.envs import register  # type: ignore[attr-defined] #gym has bad types
 
 from .fake_generator import FakeGenerator
 from .generator import Generator

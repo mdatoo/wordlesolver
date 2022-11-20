@@ -23,12 +23,10 @@ test_data = [
 test_data_names = ["fake_generator", "real_generator"]
 
 
-@mark.parametrize(
-    "generator_type, generator_to_actual_word", test_data, ids=test_data_names
-)
+@mark.parametrize("generator_type, generator_to_actual_word", test_data, ids=test_data_names)
 def test_won_game(
     generator_type: Type[Generator],
-    generator_to_actual_word: Callable[[Type[Generator]], str],
+    generator_to_actual_word: Callable[[Generator], str],
 ) -> None:
     """Test where agent guesses correctly."""
     # Given
@@ -53,12 +51,10 @@ def test_won_game(
     assert str(exc_info.value) == "Cannot perform an action when game ended"
 
 
-@mark.parametrize(
-    "generator_type, generator_to_actual_word", test_data, ids=test_data_names
-)
+@mark.parametrize("generator_type, generator_to_actual_word", test_data, ids=test_data_names)
 def test_lost_game(
     generator_type: Type[Generator],
-    generator_to_actual_word: Callable[[Type[Generator]], str],
+    generator_to_actual_word: Callable[[Generator], str],
 ) -> None:
     """Test where agent fails to guess the correct answer."""
     # Given
@@ -86,9 +82,7 @@ def test_lost_game(
 
 
 @mark.parametrize("generator_type, _", test_data, ids=test_data_names)
-def test_invalid_guess(
-    generator_type: Type[Generator], _: Callable[[Type[Generator]], str]
-) -> None:
+def test_invalid_guess(generator_type: Type[Generator], _: Callable[[Type[Generator]], str]) -> None:
     """Test where agent submits an invalid guess."""
     # Given
     generator = generator_type()
@@ -99,8 +93,7 @@ def test_invalid_guess(
     with raises(AssertionError) as exc_info:
         generator.step(guessed_word_id)
     assert (
-        str(exc_info.value)
-        == f"Invalid action {guessed_word_id} specified, must be in range [0..{DICTIONARY_LENGTH}]"
+        str(exc_info.value) == f"Invalid action {guessed_word_id} specified, must be in range [0..{DICTIONARY_LENGTH}]"
     )
 
 

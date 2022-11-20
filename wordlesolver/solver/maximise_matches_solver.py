@@ -32,3 +32,8 @@ class MaximiseMatchesSolver(Solver):
                 if char_0 == char_1:
                     matching_chars.add(char_0)
         return len(matching_chars)
+
+    @staticmethod
+    def train() -> None:
+        """Train maximise matches solver."""
+        raise NotImplementedError("Maximise matches solver cannot be trained")

@@ -52,7 +52,7 @@ class FakeGenerator(Generator):
 
         self._word = choice(POSSIBLE_WORDS)
 
-    def reset(self) -> List[int]:
+    def reset(self) -> List[int]:  # type: ignore # gym has bad types
         """
         Reset the environment.
 
@@ -65,9 +65,7 @@ class FakeGenerator(Generator):
         return super().reset()
 
     def _guess_word(self, guess: str) -> List[LetterValidity]:
-        word_validity = [
-            self._letter_validity(pos, letter) for pos, letter in enumerate(guess)
-        ]
+        word_validity = [self._letter_validity(pos, letter) for pos, letter in enumerate(guess)]
 
         character_frequencies: Counter[str] = Counter(self._word)
         for character, validity in zip(guess, word_validity):
@@ -94,6 +92,4 @@ class FakeGenerator(Generator):
 
     def render(self, _: str = "human") -> None:
         """[NOT IMPLEMENTED] Render current state."""
-        raise NotImplementedError(
-            "Rendering has not been implemented for this environment"
-        )
+        raise NotImplementedError("Rendering has not been implemented for this environment")

@@ -52,15 +52,11 @@ class WordFilter:
         self._filter_by_matches(guess, word_validity)
         self._filter_by_counts(guess, word_validity)
 
-    def _filter_by_matches(
-        self, guess: str, word_validity: List[LetterValidity]
-    ) -> None:
+    def _filter_by_matches(self, guess: str, word_validity: List[LetterValidity]) -> None:
         for pos, (character, validity) in enumerate(zip(guess, word_validity)):
             self._filter_by_match(pos, character, validity)
 
-    def _filter_by_match(
-        self, pos: int, character: str, validity: LetterValidity
-    ) -> None:
+    def _filter_by_match(self, pos: int, character: str, validity: LetterValidity) -> None:
         match validity:
             case LetterValidity.GREEN:
                 self._filter_by_green_match(pos, character)
@@ -68,21 +64,13 @@ class WordFilter:
                 self._filter_by_non_green_match(pos, character)
 
     def _filter_by_green_match(self, pos: int, character: str) -> None:
-        self._possible_words = [
-            word for word in self._possible_words if word[pos] == character
-        ]
+        self._possible_words = [word for word in self._possible_words if word[pos] == character]
 
     def _filter_by_non_green_match(self, pos: int, character: str) -> None:
-        self._possible_words = [
-            word for word in self._possible_words if word[pos] != character
-        ]
+        self._possible_words = [word for word in self._possible_words if word[pos] != character]
 
-    def _filter_by_counts(
-        self, guess: str, word_validity: List[LetterValidity]
-    ) -> None:
-        character_idxs: Dict[str, Dict[LetterValidity, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
+    def _filter_by_counts(self, guess: str, word_validity: List[LetterValidity]) -> None:
+        character_idxs: Dict[str, Dict[LetterValidity, int]] = defaultdict(lambda: defaultdict(int))
 
         for character, letter_validity in zip(guess, word_validity):
             character_idxs[character][letter_validity] += 1
@@ -96,11 +84,7 @@ class WordFilter:
                 self._filter_by_at_least_count(count, character)
 
     def _filter_by_at_least_count(self, count: int, character: str) -> None:
-        self._possible_words = [
-            word for word in self._possible_words if word.count(character) >= count
-        ]
+        self._possible_words = [word for word in self._possible_words if word.count(character) >= count]
 
     def _filter_by_exact_count(self, count: int, character: str) -> None:
-        self._possible_words = [
-            word for word in self._possible_words if word.count(character) == count
-        ]
+        self._possible_words = [word for word in self._possible_words if word.count(character) == count]

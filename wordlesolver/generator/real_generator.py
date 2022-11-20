@@ -72,7 +72,7 @@ class RealGenerator(Generator):
         self._tab = self._new_tab()
         self._open_page()
 
-    def reset(self) -> List[int]:
+    def reset(self) -> List[int]:  # type: ignore # gym has bad types
         """
         Reset the environment.
 
@@ -87,9 +87,7 @@ class RealGenerator(Generator):
 
     @classmethod
     def _new_tab(cls) -> Page:
-        return cls.PLAYWRIGHT.chromium.launch().new_page(
-            viewport={"width": cls.PAGE_WIDTH, "height": cls.PAGE_HEIGHT}
-        )
+        return cls.PLAYWRIGHT.chromium.launch().new_page(viewport={"width": cls.PAGE_WIDTH, "height": cls.PAGE_HEIGHT})
 
     def _open_page(self) -> None:
         self._tab.goto(self.PAGE_URL)
@@ -113,16 +111,10 @@ class RealGenerator(Generator):
         expect(self._cell(idx)).not_to_have_attribute("data-state", "tbd")
 
     def _letter_validity(self, pos: int) -> LetterValidity:
-        return self.DATA_STATE_TO_VALIDITY[
-            str(self._cell(pos).get_attribute("data-state"))
-        ]
+        return self.DATA_STATE_TO_VALIDITY[str(self._cell(pos).get_attribute("data-state"))]
 
     def _cell(self, idx: int) -> Locator:
-        return (
-            self._tab.locator(f'[aria-label="Row {self._current_row}"]')
-            .locator(".Tile-module_tile__3ayIZ")
-            .nth(idx)
-        )
+        return self._tab.locator(f'[aria-label="Row {self._current_row}"]').locator(".Tile-module_tile__3ayIZ").nth(idx)
 
     @property
     def _current_row(self) -> int:
@@ -130,6 +122,4 @@ class RealGenerator(Generator):
 
     def render(self, _: str = "human") -> None:
         """[NOT IMPLEMENTED] Render current state."""
-        raise NotImplementedError(
-            "Rendering has not been implemented for this environment"
-        )
+        raise NotImplementedError("Rendering has not been implemented for this environment")
