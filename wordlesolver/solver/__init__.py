@@ -14,7 +14,7 @@ from typing import Any, Optional, Sequence, Union
 from .maximise_matches_solver import MaximiseMatchesSolver
 from .solver import Solver
 
-solvers = {"MaximiseMatchesSolver": MaximiseMatchesSolver}
+solvers = {"maximise_matches_solver.py": MaximiseMatchesSolver}
 
 
 class ValidateSolver(Action):

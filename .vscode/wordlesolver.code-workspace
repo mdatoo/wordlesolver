@@ -25,13 +25,13 @@
                 "id": "generator",
                 "type": "promptString",
                 "description": "Word generator to use",
-                "default": "FakeGenerator"
+                "default": "fake_generator.py"
             },
             {
                 "id": "solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "MaximiseMatchesSolver"
+                "default": "maximise_matches_solver.py"
             }
         ]
     },
@@ -56,13 +56,13 @@
                 "id": "generator",
                 "type": "promptString",
                 "description": "Word generator to use",
-                "default": "FakeGenerator"
+                "default": "fake_generator.py"
             },
             {
                 "id": "solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "MaximiseMatchesSolver"
+                "default": "maximise_matches_solver.py"
             }
         ]
     },

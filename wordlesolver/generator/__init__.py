@@ -20,7 +20,7 @@ from .real_generator import RealGenerator
 register(id="FakeGenerator-v0", entry_point=FakeGenerator, max_episode_steps=6)
 register(id="RealGenerator-v0", entry_point=RealGenerator, max_episode_steps=6)
 
-generators = {"FakeGenerator": FakeGenerator, "RealGenerator": RealGenerator}
+generators = {"fake_generator.py": FakeGenerator, "real_generator.py": RealGenerator}
 
 
 class ValidateGenerator(Action):

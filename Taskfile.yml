@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Builds and installs project with dependencies and pre-commit
+    cmds:
+      - poetry install
+      - playwright install
+      - pre-commit install --hook-type commit-msg
+
+  run:
+    desc: Runs specified solver with specified generator
+    cmds:
+      - poetry run python main.py {{.CLI_ARGS}}
+
+  train:
+    desc: Trains specified solver
+    cmds:
+      - poetry run python wordlesolver/solver/{{.CLI_ARGS}}
+
+  test:
+    cmds:
+      - poetry run pytest tests/
+
+  lint:
+    cmds:
+      - poetry run pre-commit run --all-files

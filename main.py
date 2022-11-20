@@ -1,5 +1,5 @@
 """
-Main file
+Main file.
 
 Functions:
     parse_arguments() -> Namespace
@@ -14,12 +14,11 @@ from wordlesolver.solver import ValidateSolver
 
 def parse_arguments() -> Namespace:
     """
-    Parses command line arguments
+    Parse command line arguments.
 
     Returns:
         Namespace: Parsed args
     """
-
     parser = ArgumentParser()
     parser.add_argument(
         "generator",
