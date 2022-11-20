@@ -1,5 +1,5 @@
 """
-Import file including argument parsing utils.
+Import file including gym environment registration and argument parsing utils.
 
 Classes:
     ValidateGenerator
@@ -11,9 +11,14 @@ Misc variables:
 from argparse import Action, ArgumentParser, Namespace
 from typing import Any, Optional, Sequence, Union
 
+from gym.envs import register
+
 from .fake_generator import FakeGenerator
 from .generator import Generator
 from .real_generator import RealGenerator
+
+register(id="FakeGenerator-v0", entry_point=FakeGenerator, max_episode_steps=6)
+register(id="RealGenerator-v0", entry_point=RealGenerator, max_episode_steps=6)
 
 generators = {"FakeGenerator": FakeGenerator, "RealGenerator": RealGenerator}
 
