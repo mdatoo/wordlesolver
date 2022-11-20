@@ -5,7 +5,7 @@ tasks:
     desc: Builds and installs project with dependencies and pre-commit
     cmds:
       - poetry install
-      - playwright install
+      - poetry run playwright install
       - pre-commit install --hook-type commit-msg
 
   run:
