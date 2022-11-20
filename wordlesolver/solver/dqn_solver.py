@@ -7,7 +7,7 @@ Classes:
 
 from gym import make
 
-# pylint: disable=unused-import
+# pylint: disable=unused-import; environment registration
 from wordlesolver import generator
 
 if __name__ == "__main__":
