@@ -9,6 +9,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: arduino/setup-task@v1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
     - uses: snok/install-poetry@v1
     - name: Run pre-commit
       shell: bash -l {0}
@@ -23,6 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: arduino/setup-task@v1
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - uses: snok/install-poetry@v1
       - name: Run tests
         shell: bash -l {0}
