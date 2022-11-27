@@ -36,19 +36,19 @@
                 "id": "generator",
                 "type": "promptString",
                 "description": "Word generator to use",
-                "default": "fake_generator.py"
+                "default": "FakeGenerator"
             },
             {
                 "id": "solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "maximise_matches_solver.py"
+                "default": "MaximiseMatchesSolver"
             },
             {
                 "id": "trainable_solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "dqn_solver.py"
+                "default": "DqnSolver"
             }
         ]
     },
@@ -83,19 +83,19 @@
                 "id": "generator",
                 "type": "promptString",
                 "description": "Word generator to use",
-                "default": "fake_generator.py"
+                "default": "FakeGenerator"
             },
             {
                 "id": "solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "maximise_matches_solver.py"
+                "default": "MaximiseMatchesSolver"
             },
             {
                 "id": "trainable_solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "dqn_solver.py"
+                "default": "DqnSolver"
             }
         ]
     },

@@ -12,6 +12,6 @@
 
 ## Running
 - Run project: `task run -- {generator} {solver}`
-  > e.g. task run -- fake_generator.py maximise_matches_solver.py
+  > e.g. task run -- FakeGenerator MaximiseMatchesSolver
 - Train solver: `task train -- {solver}`
-  > e.g. task train -- dqn_solver.py
+  > e.g. task train -- DqnSolver

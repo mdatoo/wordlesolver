@@ -16,8 +16,8 @@ from .maximise_matches_solver import MaximiseMatchesSolver
 from .solver import Solver
 
 solvers = {
-    "dqn_solver.py": DqnSolver,
-    "maximise_matches_solver.py": MaximiseMatchesSolver,
+    "DqnSolver": DqnSolver,
+    "MaximiseMatchesSolver": MaximiseMatchesSolver,
 }
 
 

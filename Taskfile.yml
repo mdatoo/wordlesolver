@@ -16,7 +16,7 @@ tasks:
   train:
     desc: Trains specified solver
     cmds:
-      - poetry run python wordlesolver/solver/{{.CLI_ARGS}}
+      - poetry run python train.py {{.CLI_ARGS}}
 
   test:
     cmds:
