@@ -36,6 +36,6 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     generator = FakeGenerator()
-    solver = args.solver.train()
+    solver = args.solver(generator)
 
     solver.train()

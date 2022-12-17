@@ -6,10 +6,10 @@ Classes:
 """
 
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 
-from ..data import POSSIBLE_WORDS
-from ..response import LetterValidity
+from .letter_validity import LetterValidity
+from .words import DICTIONARY
 
 
 class WordFilter:
@@ -25,32 +25,33 @@ class WordFilter:
 
     Methods
     -------
-    filter(self, guess : str, word_validity : List[LetterValidity]) -> None
+    filter(self, guess : Optional[str], word_validity : Optional[List[LetterValidity]]) -> None
         Filter possible words list given a guess and corresponding validity
     """
 
     def __init__(self) -> None:
         """Initialise object."""
-        self._possible_words = POSSIBLE_WORDS
+        self._possible_words: List[str] = DICTIONARY
 
     @property
     def possible_words(self) -> List[str]:
         """Possible words left in search space."""
         return self._possible_words
 
-    def filter(self, guess: str, word_validity: List[LetterValidity]) -> None:
+    def filter(self, guess: Optional[str], word_validity: Optional[List[LetterValidity]]) -> None:
         """
         Filter possible words list given a guess and corresponding validity.
 
         Parameters
         ----------
-        guess : str
+        guess : Optional[str]
             Guessed word
-        word_validity : List[LetterValidity]
+        word_validity : Optional[List[LetterValidity]]
             Corresponding validity
         """
-        self._filter_by_matches(guess, word_validity)
-        self._filter_by_counts(guess, word_validity)
+        if guess and word_validity:
+            self._filter_by_matches(guess, word_validity)
+            self._filter_by_counts(guess, word_validity)
 
     def _filter_by_matches(self, guess: str, word_validity: List[LetterValidity]) -> None:
         for pos, (character, validity) in enumerate(zip(guess, word_validity)):
@@ -59,14 +60,14 @@ class WordFilter:
     def _filter_by_match(self, pos: int, character: str, validity: LetterValidity) -> None:
         match validity:
             case LetterValidity.GREEN:
-                self._filter_by_green_match(pos, character)
+                self._filter_by_valid_match(pos, character)
             case _:
-                self._filter_by_non_green_match(pos, character)
+                self._filter_by_invalid_match(pos, character)
 
-    def _filter_by_green_match(self, pos: int, character: str) -> None:
+    def _filter_by_valid_match(self, pos: int, character: str) -> None:
         self._possible_words = [word for word in self._possible_words if word[pos] == character]
 
-    def _filter_by_non_green_match(self, pos: int, character: str) -> None:
+    def _filter_by_invalid_match(self, pos: int, character: str) -> None:
         self._possible_words = [word for word in self._possible_words if word[pos] != character]
 
     def _filter_by_counts(self, guess: str, word_validity: List[LetterValidity]) -> None:
@@ -76,7 +77,7 @@ class WordFilter:
             character_idxs[character][letter_validity] += 1
 
         for character, validities in character_idxs.items():
-            count = validities[LetterValidity.GREEN] + validities[LetterValidity.YELLOW]
+            count: int = validities[LetterValidity.GREEN] + validities[LetterValidity.YELLOW]
 
             if LetterValidity.GREY in validities:
                 self._filter_by_exact_count(count, character)

@@ -2,12 +2,20 @@
 File containing list of possible words.
 
 Misc variables:
-    POSSIBLE_WORDS : List[str]
+    DICTIONARY : List[str]
+    DICTIONARY_LENGTH : int
     WORD_LENGTH : int
+    LETTERS : List[str]
+    LETTERS_COUNT : int
 """
 
-with open("wordlesolver/data/words.txt", "r", encoding="utf-8") as file:
-    POSSIBLE_WORDS = file.read().replace('"', "").split(", ")
+from string import ascii_lowercase
+from typing import List
 
-WORD_LENGTH = len(POSSIBLE_WORDS[0])
-DICTIONARY_LENGTH = len(POSSIBLE_WORDS)
+with open("wordlesolver/data/words.txt", "r", encoding="utf-8") as file:
+    DICTIONARY: List[str] = file.read().replace('"', "").split(", ")
+
+DICTIONARY_LENGTH: int = len(DICTIONARY)
+WORD_LENGTH: int = len(DICTIONARY[0])
+LETTERS: List[str] = list(ascii_lowercase)
+LETTERS_COUNT: int = len(LETTERS)

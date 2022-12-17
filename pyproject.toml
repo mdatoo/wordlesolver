@@ -8,10 +8,9 @@ readme = "README.md"
 repository = "https://github.com/mdatoo/wordlesolver"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-gym = "^0.26.2"
+python = "~3.10"
+gym = "~0.21"
 tqdm = "^4.64.1"
-keras-rl = "^0.4.2"
 pytest-playwright = "^0.3.0"
 
 [tool.poetry.dev-dependencies]

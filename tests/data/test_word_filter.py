@@ -10,9 +10,7 @@ Functions:
 
 from pytest import main
 
-from wordlesolver.data import POSSIBLE_WORDS
-from wordlesolver.generator.word_filter import WordFilter
-from wordlesolver.response import LetterValidity
+from wordlesolver.data import DICTIONARY, LetterValidity, WordFilter
 
 
 def test_filter_one_green() -> None:
@@ -32,7 +30,7 @@ def test_filter_one_green() -> None:
     filterer.filter(word, validity)
 
     # Then
-    for possible_word in POSSIBLE_WORDS:
+    for possible_word in DICTIONARY:
         if possible_word in filterer.possible_words:
             assert possible_word[0] == "e" and possible_word.count("e") == 1
         else:
@@ -56,7 +54,7 @@ def test_filter_two_yellow() -> None:
     filterer.filter(word, validity)
 
     # Then
-    for possible_word in POSSIBLE_WORDS:
+    for possible_word in DICTIONARY:
         if possible_word in filterer.possible_words:
             assert (
                 possible_word[0] != "e"
@@ -90,7 +88,7 @@ def test_filter_one_green_one_yellow() -> None:
     filterer.filter(word, validity)
 
     # Then
-    for possible_word in POSSIBLE_WORDS:
+    for possible_word in DICTIONARY:
         if possible_word in filterer.possible_words:
             assert (
                 possible_word[0] == "e"
@@ -126,7 +124,7 @@ def test_filter_all_grey() -> None:
     filterer.filter(word, validity)
 
     # Then
-    for possible_word in POSSIBLE_WORDS:
+    for possible_word in DICTIONARY:
         if possible_word in filterer.possible_words:
             assert possible_word.count("e") == 0
         else:

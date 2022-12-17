@@ -4,24 +4,26 @@ tasks:
   build:
     desc: Builds and installs project with dependencies and pre-commit
     cmds:
-      - poetry install
-      - poetry run playwright install
-      - poetry run pre-commit install --hook-type commit-msg
+      - conda env create -f environment.yml
+      - conda run -n wordlesolver poetry install
+      - conda run -n wordlesolver playwright install
+      - conda run -n wordlesolver pre-commit install --hook-type commit-msg
+    interactive: true
 
   run:
     desc: Runs specified solver with specified generator
     cmds:
-      - poetry run python main.py {{.CLI_ARGS}}
+      - conda run --live-stream -n wordlesolver python main.py {{.CLI_ARGS}}
 
   train:
     desc: Trains specified solver
     cmds:
-      - poetry run python train.py {{.CLI_ARGS}}
+      - conda run --live-stream -n wordlesolver python train.py {{.CLI_ARGS}}
 
   test:
     cmds:
-      - poetry run pytest tests/
+      - conda run --live-stream -n wordlesolver pytest tests/
 
   lint:
     cmds:
-      - poetry run pre-commit run --all-files
+      - conda run --live-stream -n wordlesolver pre-commit run --all-files

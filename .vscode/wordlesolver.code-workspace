@@ -48,7 +48,7 @@
                 "id": "trainable_solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "DqnSolver"
+                "default": "PPOSolver"
             }
         ]
     },
@@ -95,12 +95,13 @@
                 "id": "trainable_solver",
                 "type": "promptString",
                 "description": "Wordle solver to use",
-                "default": "DqnSolver"
+                "default": "PPOSolver"
             }
         ]
     },
     "settings": {
         "[python]": {
+            "editor.defaultFormatter": "ms-python.black-formatter",
             "editor.formatOnSave": true,
             "editor.codeActionsOnSave": {
                 "source.organizeImports": true

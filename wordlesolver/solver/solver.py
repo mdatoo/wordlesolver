@@ -7,10 +7,9 @@ Classes:
 
 from abc import ABC, abstractmethod
 from logging import info
-from typing import List
+from typing import Any
 
-from ..data import POSSIBLE_WORDS
-from ..generator import Generator
+from gym import Env
 
 
 # pylint: disable=too-few-public-methods; abstract class
@@ -26,27 +25,23 @@ class Solver(ABC):
         Run the game
     """
 
-    def __init__(self, generator: Generator) -> None:
+    def __init__(self, generator: Env) -> None:
         """Initialise object."""
-        self._generator = generator
+        self._generator: Env = generator
 
     def run(self) -> None:
         """Run the game."""
-        self._generator.reset()
-
-        done = False
-        possible_words = POSSIBLE_WORDS
+        observation: Any = self._generator.reset()
+        done: bool = False
 
         while not done:
-            next_guess = self._next_guess(possible_words)
-            _, reward, done, extra_data = self._generator.step(POSSIBLE_WORDS.index(next_guess))
-            possible_words = extra_data["possible_words"]
-            word_validity = extra_data["word_validity"]
+            next_action: Any = self._next_guess(observation)
+            observation, reward, done, _ = self._generator.step(next_action)
 
-            info(f"Guessed {next_guess}, got reward {reward}, got word validity {word_validity}")
+            info(f"Took action {next_action}, got reward {reward}, got observation {observation}")
 
         info("Finished game")
 
     @abstractmethod
-    def _next_guess(self, possible_words: List[str]) -> str:
+    def _next_guess(self, observation: Any) -> Any:
         raise NotImplementedError

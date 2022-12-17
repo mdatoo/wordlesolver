@@ -7,70 +7,42 @@ Classes:
 
 from collections import Counter
 from secrets import choice
-from typing import List
+from typing import List, Optional
 
-from ..data import POSSIBLE_WORDS
-from ..response import LetterValidity
+from ..data import DICTIONARY, LetterValidity
 from .generator import Generator
 
 
 class FakeGenerator(Generator):
-    """
-    Fake word generator class.
-
-    ...
-
-    Attributes
-    ----------
-    GUESSES : int
-        Number of guesses allowed
-    ACTION_SPACE : spaces.Discrete
-        Actions allowed
-    OBSERVATION_SPACE : spaces.Discrete
-        Possible observations
-
-    Properties
-    ----------
-    done : bool
-        Whether the game has ended
-    guesses_remaining : int
-        Remaining guesses
-
-    Methods
-    -------
-    reset(self) -> None
-        Reset the environment
-    step(self, action: int) -> Tuple[List[int], float, bool, dict]
-        Perform given action
-    observe(self) -> List[int]
-        Observe current state
-    """
+    """Fake generator class."""
 
     def __init__(self) -> None:
         """Initialise object."""
         super().__init__()
 
-        self._word = choice(POSSIBLE_WORDS)
+        self._word: str = choice(DICTIONARY)
 
-    def reset(self) -> List[int]:  # type: ignore # gym has bad types
+    def reset(self) -> Optional[List[LetterValidity]]:
         """
         Reset the environment.
 
         Returns
         -------
-        List[int]
+        Optional[List[LetterValidity]]
         """
-        self._word = choice(POSSIBLE_WORDS)
+        self._word = choice(DICTIONARY)
 
         return super().reset()
 
     def _guess_word(self, guess: str) -> List[LetterValidity]:
-        word_validity = [self._letter_validity(pos, letter) for pos, letter in enumerate(guess)]
+        word_validity: List[LetterValidity] = [self._letter_validity(pos, letter) for pos, letter in enumerate(guess)]
 
         character_frequencies: Counter[str] = Counter(self._word)
+
         for character, validity in zip(guess, word_validity):
             if validity == LetterValidity.GREEN:
                 character_frequencies[character] -= 1
+
         for pos, (character, validity) in enumerate(zip(guess, word_validity)):
             if validity == LetterValidity.YELLOW:
                 if character_frequencies[character] <= 0:
@@ -89,7 +61,3 @@ class FakeGenerator(Generator):
         if letter in self._word:
             return LetterValidity.YELLOW
         return LetterValidity.GREY
-
-    def render(self, _: str = "human") -> None:
-        """[NOT IMPLEMENTED] Render current state."""
-        raise NotImplementedError("Rendering has not been implemented for this environment")

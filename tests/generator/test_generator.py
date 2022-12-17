@@ -11,9 +11,8 @@ from typing import Callable, Type
 
 from pytest import main, mark, raises
 
-from wordlesolver.data import DICTIONARY_LENGTH, POSSIBLE_WORDS, get_answer
+from wordlesolver.data import LetterValidity, get_answer
 from wordlesolver.generator import FakeGenerator, Generator, RealGenerator
-from wordlesolver.response import LetterValidity
 
 test_data = [
     # pylint: disable=protected-access; need to guess the answer
@@ -23,61 +22,55 @@ test_data = [
 test_data_names = ["fake_generator", "real_generator"]
 
 
-@mark.parametrize("generator_type, generator_to_actual_word", test_data, ids=test_data_names)
+@mark.parametrize("generator_type, generator_to_answer", test_data, ids=test_data_names)
 def test_won_game(
     generator_type: Type[Generator],
-    generator_to_actual_word: Callable[[Generator], str],
+    generator_to_answer: Callable[[Generator], str],
 ) -> None:
     """Test where agent guesses correctly."""
     # Given
     generator = generator_type()
     generator.reset()
-    actual_word = generator_to_actual_word(generator)
-    actual_word_id = POSSIBLE_WORDS.index(actual_word)
+    answer = generator_to_answer(generator)
 
     # When
-    observation, reward, done, extra_data = generator.step(actual_word_id)
+    observation, reward, done, extra_data = generator.step(answer)
 
     # Then
-    assert observation == [1 if word == actual_word else 0 for word in POSSIBLE_WORDS]
-    assert reward == 30
+    assert observation == [LetterValidity.GREEN] * 5
+    assert reward == 150
     assert done
-    assert set(extra_data.keys()) == {"possible_words", "word_validity"}
-    assert extra_data["possible_words"] == [actual_word]
-    assert extra_data["word_validity"] == [LetterValidity.GREEN] * 5
+    assert extra_data == {}
 
     with raises(AssertionError) as exc_info:
-        generator.step(actual_word_id)
+        generator.step(answer)
     assert str(exc_info.value) == "Cannot perform an action when game ended"
 
 
-@mark.parametrize("generator_type, generator_to_actual_word", test_data, ids=test_data_names)
+@mark.parametrize("generator_type, generator_to_answer", test_data, ids=test_data_names)
 def test_lost_game(
     generator_type: Type[Generator],
-    generator_to_actual_word: Callable[[Generator], str],
+    generator_to_answer: Callable[[Generator], str],
 ) -> None:
     """Test where agent fails to guess the correct answer."""
     # Given
     generator = generator_type()
     generator.reset()
-    actual_word = generator_to_actual_word(generator)
-    guessed_word = "guess" if actual_word != "guess" else "point"
-    guessed_word_id = POSSIBLE_WORDS.index(guessed_word)
+    answer = generator_to_answer(generator)
+    guess = "guess" if answer != "guess" else "point"
 
     # When
     for _ in range(generator.GUESSES):
-        observation, reward, done, extra_data = generator.step(guessed_word_id)
+        observation, reward, done, extra_data = generator.step(guess)
 
     # Then
-    assert observation.count(1) > 1
-    assert reward < 5
+    assert observation != [LetterValidity.GREEN] * 5
+    assert reward < 25
     assert done
-    assert set(extra_data.keys()) == {"possible_words", "word_validity"}
-    assert len(extra_data["possible_words"]) > 1
-    assert extra_data["word_validity"] != [LetterValidity.GREEN] * 5
+    assert extra_data == {}
 
     with raises(AssertionError) as exc_info:
-        generator.step(guessed_word_id)
+        generator.step(guess)
     assert str(exc_info.value) == "Cannot perform an action when game ended"
 
 
@@ -87,14 +80,20 @@ def test_invalid_guess(generator_type: Type[Generator], _: Callable[[Type[Genera
     # Given
     generator = generator_type()
     generator.reset()
-    guessed_word_id = -1
+    guess = "abcde"
+
+    # When
+    observation, reward, done, extra_data = generator.step(guess)
 
     # Then
+    assert observation is None
+    assert reward == -150
+    assert done
+    assert extra_data == {}
+
     with raises(AssertionError) as exc_info:
-        generator.step(guessed_word_id)
-    assert (
-        str(exc_info.value) == f"Invalid action {guessed_word_id} specified, must be in range [0..{DICTIONARY_LENGTH}]"
-    )
+        generator.step(guess)
+    assert str(exc_info.value) == "Cannot perform an action when game ended"
 
 
 if __name__ == "__main__":

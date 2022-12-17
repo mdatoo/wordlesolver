@@ -6,16 +6,15 @@ Classes:
 """
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from logging import warning
+from typing import Any, Dict, List, Optional, Tuple
 
-from gym import Env, spaces
+from gym import Env
 
-from ..data import DICTIONARY_LENGTH, POSSIBLE_WORDS
-from ..response import LetterValidity
-from .word_filter import WordFilter
+from ..data import DICTIONARY, WORD_LENGTH, LetterValidity
 
 
-class Generator(Env):  # type: ignore[type-arg] # gym has bad types
+class Generator(Env):  # type: ignore[misc] # gym has bad types
     """
     Generator abstract class.
 
@@ -25,10 +24,14 @@ class Generator(Env):  # type: ignore[type-arg] # gym has bad types
     ----------
     GUESSES : int
         Number of guesses allowed
-    ACTION_SPACE : spaces.Discrete
-        Actions allowed
-    OBSERVATION_SPACE : spaces.Discrete
-        Possible observations
+    YELLOW_VALUE : int
+        Reward for guessing a letter in the incorrect place
+    GREEN_VALUE : int
+        Reward for guessing a letter in the correct place
+    UNUSED_TURN_VALUE : int
+        Reward for not needing to use a turn
+    INVALID_WORD_VALUE : int
+        Reward for guessing a word not in the dictionary
 
     Properties
     ----------
@@ -36,27 +39,33 @@ class Generator(Env):  # type: ignore[type-arg] # gym has bad types
         Whether the game has ended
     guesses_remaining : int
         Remaining guesses
+    observation : Optional[List[LetterValidity]]
+        Environment state
+    won : bool
+        Whether the game has been won
+    reward : int
+        Reward of previous action
 
     Methods
     -------
-    reset(self) -> None
+    reset(self) -> Optional[List[LetterValidity]]
         Reset the environment
-    step(self, action: int) -> Tuple[List[int], float, bool, dict]
+    step(self, action: str) -> Tuple[Optional[List[LetterValidity]], int, bool, Dict[str, Any]]
         Perform given action
-    observe(self) -> List[int]
-        Observe current state
     """
 
-    GUESSES = 6
+    GUESSES: int = 6
 
-    ACTION_SPACE = spaces.Discrete(DICTIONARY_LENGTH)
-    OBSERVATION_SPACE = spaces.MultiBinary(DICTIONARY_LENGTH)
+    YELLOW_VALUE: int = 1
+    GREEN_VALUE: int = YELLOW_VALUE * WORD_LENGTH
+    UNUSED_TURN_VALUE: int = GREEN_VALUE * WORD_LENGTH
+    INVALID_WORD_VALUE: int = -UNUSED_TURN_VALUE * GUESSES
 
     def __init__(self) -> None:
         """Initialise object."""
-        self._done = False
-        self._guesses_remaining = self.GUESSES
-        self._word_filter = WordFilter()
+        self._done: bool = False
+        self._guesses_remaining: int = self.GUESSES
+        self._observation: Optional[List[LetterValidity]] = None
 
     @property
     def done(self) -> bool:
@@ -68,78 +77,79 @@ class Generator(Env):  # type: ignore[type-arg] # gym has bad types
         """Remaining guesses."""
         return self._guesses_remaining
 
+    @property
+    def observation(self) -> Optional[List[LetterValidity]]:
+        """Environment state."""
+        return self._observation
+
     # pylint: disable=arguments-differ
-    def reset(self) -> List[int]:  # type: ignore # gym has bad types
+    def reset(self) -> Optional[List[LetterValidity]]:
         """
         Reset the environment.
 
         Returns
         -------
-        List[int]
+        Optional[List[LetterValidity]]
         """
         self._done = False
         self._guesses_remaining = self.GUESSES
-        self._word_filter = WordFilter()
+        self._observation = None
 
-        return self.observe()
+        return self.observation
 
     # pylint: disable=arguments-differ
-    def step(self, action: int) -> Tuple[List[int], float, bool, Dict[str, Any]]:  # type: ignore # gym has bad types
+    def step(self, action: str) -> Tuple[Optional[List[LetterValidity]], int, bool, Dict[str, Any]]:
         """
         Perform given action.
 
         Parameters
         ----------
-        action : int
+        action : str
             Action to perform
 
         Returns
         -------
-        Tuple[List[int], float, bool, dict]
+        Tuple[Optional[List[LetterValidity]], float, bool, dict]
         """
-        if not self.ACTION_SPACE.contains(action):
-            raise AssertionError(f"Invalid action {action} specified, must be in range [0..{DICTIONARY_LENGTH}]")
         if self.done:
             raise AssertionError("Cannot perform an action when game ended")
 
-        guess = POSSIBLE_WORDS[action]
-        word_validity = self._guess_word(guess)
-
-        self._guesses_remaining -= 1
-        if self.guesses_remaining <= 0 or self._all_green(word_validity):
+        if action not in DICTIONARY:
             self._done = True
-        self._word_filter.filter(guess, word_validity)
+            self._observation = None
 
-        return (
-            self.observe(),
-            self._get_reward(word_validity),
-            self.done,
-            {
-                "possible_words": self._word_filter.possible_words,
-                "word_validity": word_validity,
-            },
-        )
+            return (self.observation, self.INVALID_WORD_VALUE, self.done, {})
+
+        self._observation = self._guess_word(action)
+        self._guesses_remaining -= 1
+        self._done = self.guesses_remaining <= 0 or self.won
+
+        return (self.observation, self.reward, self.done, {})
+
+    @property
+    def won(self) -> bool:
+        """Whether the game has been won."""
+        if not self.observation:
+            return False
+
+        return all(letter_validity == LetterValidity.GREEN for letter_validity in self.observation)
+
+    @property
+    def reward(self) -> int:
+        """Reward of previous action."""
+        if not self.observation:
+            raise AssertionError("Cannot get reward of unknown observation")
+
+        green_reward: int = self.observation.count(LetterValidity.GREEN) * self.GREEN_VALUE
+        yellow_reward: int = self.observation.count(LetterValidity.YELLOW) * self.YELLOW_VALUE
+        unused_turns_reward: int = self.guesses_remaining * self.UNUSED_TURN_VALUE if self.done else 0
+
+        return green_reward + yellow_reward + unused_turns_reward
 
     @abstractmethod
     def _guess_word(self, guess: str) -> List[LetterValidity]:
         raise NotImplementedError
 
-    def _all_green(self, word_validity: List[LetterValidity]) -> bool:
-        return all(letter_validity == LetterValidity.GREEN for letter_validity in word_validity)
-
-    def observe(self) -> List[int]:
-        """
-        Observe current state.
-
-        Returns
-        -------
-        List[int]
-        """
-        return [1 if word in self._word_filter.possible_words else 0 for word in POSSIBLE_WORDS]
-
-    def _get_reward(self, word_validity: List[LetterValidity]) -> float:
-        green_reward = word_validity.count(LetterValidity.GREEN)
-        yellow_reward = word_validity.count(LetterValidity.YELLOW) * 0.1
-        unused_turns_reward = self.guesses_remaining * 5 if self.done else 0
-
-        return green_reward + yellow_reward + unused_turns_reward
+    def render(self, _: str = "human") -> None:
+        """[NOT IMPLEMENTED] Render current state."""
+        warning("Rendering has not been implemented for this environment")

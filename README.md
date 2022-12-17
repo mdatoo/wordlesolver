@@ -1,7 +1,7 @@
 # wordlesolver
 ## Installation
 - Ensure [taskfile](https://taskfile.dev/installation/) is installed
-- Ensure [poetry](https://python-poetry.org/docs/#installation) is installed
+- Ensure conda is installed ([miniforge](https://python-poetry.org/docs/#installation) is recommended)
 - Clone the repo: `git clone https://github.com/mdatoo/wordlesolver.git`
 - Build project: `task build`
 
@@ -14,4 +14,4 @@
 - Run project: `task run -- {generator} {solver}`
   > e.g. task run -- FakeGenerator MaximiseMatchesSolver
 - Train solver: `task train -- {solver}`
-  > e.g. task train -- DqnSolver
+  > e.g. task train -- PPOSolver

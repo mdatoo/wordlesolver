@@ -9,18 +9,19 @@ Misc variables:
 """
 
 from argparse import Action, ArgumentParser, Namespace
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Type, Union
 
-from gym.envs import register  # type: ignore[attr-defined] #gym has bad types
+from gym.envs import register
 
+from ..data import LetterValidity
 from .fake_generator import FakeGenerator
 from .generator import Generator
 from .real_generator import RealGenerator
 
-register(id="FakeGenerator-v0", entry_point=FakeGenerator, max_episode_steps=6)
-register(id="RealGenerator-v0", entry_point=RealGenerator, max_episode_steps=6)
+register(id="FakeGenerator-v0", entry_point=FakeGenerator, max_episode_steps=Generator.GUESSES)
+register(id="RealGenerator-v0", entry_point=RealGenerator, max_episode_steps=Generator.GUESSES)
 
-generators = {"FakeGenerator": FakeGenerator, "RealGenerator": RealGenerator}
+generators: Dict[str, Type[Generator]] = {"FakeGenerator": FakeGenerator, "RealGenerator": RealGenerator}
 
 
 class ValidateGenerator(Action):
@@ -42,4 +43,4 @@ class ValidateGenerator(Action):
         setattr(namespace, self.dest, generators[value])
 
 
-__all__ = ["Generator", "FakeGenerator", "RealGenerator", "ValidateGenerator"]
+__all__ = ["Generator", "FakeGenerator", "RealGenerator", "ValidateGenerator", "LetterValidity"]
