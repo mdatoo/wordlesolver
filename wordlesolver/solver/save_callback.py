@@ -24,23 +24,22 @@ class SaveCallback(BaseCallback):
 
     Attributes
     ----------
-    WEIGHTS_FILE : str
-        File to store/load weights
     output_folder : str
         Folder to store/load weights
+    weights_file : str
+        File to store/load weights
     eval_interval : int
         Number of episodes to average reward over
     best_reward : float
         Best reward achieved
     """
 
-    WEIGHTS_FILE: str = "ppo_weights.hdf5"
-
-    def __init__(self, output_folder: str, eval_interval: int):
+    def __init__(self, output_folder: str, weights_file: str, eval_interval: int):
         """Initialise object."""
         super().__init__()
 
         self.output_folder = output_folder
+        self.weights_file = weights_file
         self.eval_interval = eval_interval
         self.best_averaged_reward = -np.inf
 
@@ -55,6 +54,6 @@ class SaveCallback(BaseCallback):
                 info("Updating model")
                 self.best_averaged_reward = averaged_reward
                 if self.model:
-                    self.model.save(path.join(self.output_folder, self.WEIGHTS_FILE))
+                    self.model.save(path.join(self.output_folder, self.weights_file))
 
         return True
