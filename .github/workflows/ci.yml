@@ -11,6 +11,7 @@ jobs:
     - uses: arduino/setup-task@v1
     - uses: conda-incubator/setup-miniconda@v2
       with:
+        activate-environment: wordlesolver
         environment-file: environment-cpu.yml
         miniforge-variant: Mambaforge
         use-mamba: true
@@ -32,6 +33,7 @@ jobs:
       - uses: arduino/setup-task@v1
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          activate-environment: wordlesolver
           environment-file: environment-cpu.yml
           miniforge-variant: Mambaforge
           use-mamba: true
