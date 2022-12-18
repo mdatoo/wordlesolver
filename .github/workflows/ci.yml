@@ -9,10 +9,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: arduino/setup-task@v1
-    - uses: actions/setup-python@v4
+    - uses: conda-incubator/setup-miniconda@v2
       with:
-        python-version: '3.10'
-    - uses: snok/install-poetry@v1
+        miniforge-variant: Mambaforge
+        use-mamba: true
     - name: Run pre-commit
       shell: bash -l {0}
       run: task build lint
@@ -26,10 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: arduino/setup-task@v1
-      - uses: actions/setup-python@v4
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: '3.10'
-      - uses: snok/install-poetry@v1
+          miniforge-variant: Mambaforge
+          use-mamba: true
       - name: Run tests
         shell: bash -l {0}
         run: task build test
