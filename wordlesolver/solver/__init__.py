@@ -9,12 +9,16 @@ Misc variables:
 """
 
 from argparse import Action, ArgumentParser, Namespace
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Type, Union
 
 from .maximise_matches_solver import MaximiseMatchesSolver
+from .ppo_solver import PPOSolver
 from .solver import Solver
 
-solvers = {"MaximiseMatchesSolver": MaximiseMatchesSolver}
+solvers: Dict[str, Type[Solver]] = {
+    "PPOSolver": PPOSolver,
+    "MaximiseMatchesSolver": MaximiseMatchesSolver,
+}
 
 
 class ValidateSolver(Action):
@@ -36,4 +40,4 @@ class ValidateSolver(Action):
         setattr(namespace, self.dest, solvers[value])
 
 
-__all__ = ["Solver", "MaximiseMatchesSolver", "ValidateSolver"]
+__all__ = ["Solver", "PPOSolver", "MaximiseMatchesSolver", "ValidateSolver"]

@@ -1,14 +1,16 @@
 """
-Main file.
+File for training solvers.
 
 Functions:
     parse_arguments() -> Namespace
 """
 
+# pylint: disable=duplicate-code; similar to main file
+
 from argparse import ArgumentParser, Namespace
 from logging import INFO, basicConfig
 
-from wordlesolver.generator import ValidateGenerator
+from wordlesolver.generator import FakeGenerator
 from wordlesolver.solver import ValidateSolver
 
 
@@ -20,11 +22,6 @@ def parse_arguments() -> Namespace:
         Namespace: Parsed args
     """
     parser = ArgumentParser()
-    parser.add_argument(
-        "generator",
-        action=ValidateGenerator,
-        help="Word generator to use",
-    )
     parser.add_argument(
         "solver",
         action=ValidateSolver,
@@ -38,7 +35,7 @@ if __name__ == "__main__":
     basicConfig(level=INFO)
     args = parse_arguments()
 
-    generator = args.generator()
+    generator = FakeGenerator()
     solver = args.solver(generator)
 
-    solver.run()
+    solver.train()

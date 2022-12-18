@@ -4,9 +4,9 @@ channels:
   - nvidia
   - conda-forge
 dependencies:
+  - cpuonly
   - poetry=1.3.1
   - pytorch=1.13.1
   - torchvision=0.14.1
   - torchaudio=0.13.1
-  - pytorch-cuda=11.7
   - stable-baselines3=1.1.0

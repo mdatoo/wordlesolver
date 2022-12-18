@@ -1,5 +1,5 @@
 """Import file."""
 
-from . import generator, solver
+from . import data, generator, solver
 
-__all__ = ["generator", "solver"]
+__all__ = ["data", "generator", "solver"]

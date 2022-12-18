@@ -8,7 +8,7 @@
         "version": "0.2.0",
         "configurations": [
             {
-                "name": "Python: Run main",
+                "name": "Python: Run",
                 "type": "python",
                 "request": "launch",
                 "program": "main.py",
@@ -17,6 +17,17 @@
                 "args": [
                     "${input:generator}",
                     "${input:solver}"
+                ]
+            },
+            {
+                "name": "Python: Train",
+                "type": "python",
+                "request": "launch",
+                "program": "train.py",
+                "console": "integratedTerminal",
+                "justMyCode": true,
+                "args": [
+                    "${input:trainable_solver}"
                 ]
             }
         ],
@@ -32,6 +43,12 @@
                 "type": "promptString",
                 "description": "Wordle solver to use",
                 "default": "MaximiseMatchesSolver"
+            },
+            {
+                "id": "trainable_solver",
+                "type": "promptString",
+                "description": "Wordle solver to use",
+                "default": "PPOSolver"
             }
         ]
     },
@@ -40,7 +57,7 @@
         "command": "cmd.exe",
         "tasks": [
             {
-                "label": "Python: Run main",
+                "label": "Python: Run",
                 "type": "shell",
                 "command": "${command:python.interpreterPath}",
                 "problemMatcher": [],
@@ -48,6 +65,16 @@
                     "main.py",
                     "${input:generator}",
                     "${input:solver}"
+                ],
+            },
+            {
+                "label": "Python: Train",
+                "type": "shell",
+                "command": "${command:python.interpreterPath}",
+                "problemMatcher": [],
+                "args": [
+                    "train.py",
+                    "${input:trainable_solver}"
                 ],
             }
         ],
@@ -63,6 +90,12 @@
                 "type": "promptString",
                 "description": "Wordle solver to use",
                 "default": "MaximiseMatchesSolver"
+            },
+            {
+                "id": "trainable_solver",
+                "type": "promptString",
+                "description": "Wordle solver to use",
+                "default": "PPOSolver"
             }
         ]
     },
@@ -85,6 +118,8 @@
         "python.linting.enabled": true,
         "python.linting.banditEnabled": true,
         "python.linting.banditArgs": ["--configfile", "bandit.yaml"],
+        "python.formatting.provider": "black",
+        "python.formatting.blackArgs": ["--line-length", "120"],
         "python.linting.mypyEnabled": true,
         "python.linting.mypyArgs": [
             "--follow-imports=silent",

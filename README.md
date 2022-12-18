@@ -1,14 +1,17 @@
 # wordlesolver
 ## Installation
-- Ensure conda is installed ([miniforge](https://github.com/conda-forge/miniforge) is recommended)
+- Ensure [taskfile](https://taskfile.dev/installation/) is installed
+- Ensure [mamba](https://mamba.readthedocs.io/en/latest/installation.html) is installed
 - Clone the repo: `git clone https://github.com/mdatoo/wordlesolver.git`
-- Create conda environment: `conda env create -f environment.yml`
-- Initialise playwright: `playwright install`
+- Build project: `task build`
 
 ## Development tools
 - If using vscode, open workspace `.vscode/wordlesolver.code-workspace` as a file
-- Initialise pre-commit: `pre-commit install --hook-type commit-msg`
+- Run tests: `task test`
+- Run linting: `task lint`
 
 ## Running
-- Run project: `python main.py {generator} {solver}`
-- Run tests: `pytest tests/`
+- Run solver: `task run -- {generator} {solver}`
+  > e.g. task run -- FakeGenerator MaximiseMatchesSolver
+- Train solver: `task train -- {solver}`
+  > e.g. task train -- PPOSolver

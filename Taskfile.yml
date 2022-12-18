@@ -1,0 +1,42 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  build:
+    desc: Build project
+    cmds:
+      - task: build_mamba
+      - task: build_poetry
+
+  build_mamba:
+    cmds:
+      - mamba env create -f environment.yml
+  
+  build_poetry:
+    cmds:
+      - mamba run --live-stream -n wordlesolver poetry install
+      - mamba run --live-stream -n wordlesolver playwright install
+      - mamba run --live-stream -n wordlesolver pre-commit install --hook-type commit-msg
+
+  run:
+    desc: Run solver e.g. task run -- FakeGenerator MaximiseMatchesSolver
+    cmds:
+      - mamba run --live-stream -n wordlesolver python main.py {{.CLI_ARGS}}
+
+  train:
+    desc: Train solver e.g. task train -- PPOSolver
+    cmds:
+      - mamba run --live-stream -n wordlesolver python train.py {{.CLI_ARGS}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - mamba run --live-stream -n wordlesolver pytest tests/
+
+  lint:
+    desc: Run linting
+    cmds:
+      - mamba run --live-stream -n wordlesolver pre-commit run --all-files
