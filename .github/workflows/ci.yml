@@ -11,11 +11,15 @@ jobs:
     - uses: arduino/setup-task@v1
     - uses: conda-incubator/setup-miniconda@v2
       with:
+        environment-file: environment-cpu.yml
         miniforge-variant: Mambaforge
         use-mamba: true
+    - name: Setup poetry
+      shell: bash -l {0}
+      run: task build_poetry
     - name: Run pre-commit
       shell: bash -l {0}
-      run: task build lint
+      run: task lint
   tests:
     name: Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}-latest
@@ -28,8 +32,12 @@ jobs:
       - uses: arduino/setup-task@v1
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          environment-file: environment-cpu.yml
           miniforge-variant: Mambaforge
           use-mamba: true
+      - name: Setup poetry
+        shell: bash -l {0}
+        run: task build_poetry
       - name: Run tests
         shell: bash -l {0}
-        run: task build test
+        run: task test
